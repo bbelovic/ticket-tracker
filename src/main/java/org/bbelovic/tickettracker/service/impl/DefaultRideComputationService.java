@@ -63,7 +63,7 @@ public class DefaultRideComputationService implements RideComputationService {
     }
 
     private TicketStatisticsItem createTicketStatisticsItem(TicketType type, Long count) {
-        BigDecimal priceValue = pricelist.getPrice(type.name());
+        BigDecimal priceValue = pricelist.getPrice(type);
         BigDecimal finalPrice = priceValue.multiply(BigDecimal.valueOf(count));
         return new TicketStatisticsItem(type, count, finalPrice);
     }

@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 @Configuration
 public class AppConfiguration {
 
-    @Bean(destroyMethod = "close")
+    @Bean
     public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");

@@ -1,7 +1,9 @@
 package org.bbelovic.tickettracker.service;
 
+import org.bbelovic.tickettracker.domain.TicketType;
+
 import java.math.BigDecimal;
 
 public interface Pricelist {
-    BigDecimal getPrice(String priceKey);
+    BigDecimal getPrice(TicketType ticketType);
 }

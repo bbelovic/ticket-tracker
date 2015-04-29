@@ -31,7 +31,7 @@ public class TicketController {
         long userId = Long.parseLong(request.getParameter("userId"));
         TicketType ticketType = TicketType.valueOf(request.getParameter("ticketType"));
         LocalDateTime rideDate = LocalDateTime.parse(request.getParameter("rideDate"));
-        BigDecimal ticketPrice = pricelist.getPrice(ticketType.name());
+        BigDecimal ticketPrice = pricelist.getPrice(ticketType);
         UrbanTransportRideRecord rideRecord = new UrbanTransportRideRecord(0L, rideDate, ticketPrice, ticketType, userId);
         System.out.println("Adding new rideRecord="+rideRecord);
         urbanTransportRideRecordDao.insert(rideRecord);

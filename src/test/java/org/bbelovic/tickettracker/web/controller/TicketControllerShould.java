@@ -10,12 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import static org.bbelovic.tickettracker.domain.TicketType.SMS_75;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class TicketControllerShould {
 
-    private static final String TICKET_TYPE_VALUE = "SMS_75";
+    private static final TicketType TICKET_TYPE_VALUE = SMS_75;
     private static final String RIDE_DATE_VALUE = "2015-04-23T11:10:20";
     private static final String USER_ID_VALUE = "1";
     private static final String TICKET_TYPE_KEY = "ticketType";
@@ -32,16 +33,16 @@ public class TicketControllerShould {
         UrbanTransportRideRecordDao urbanTransportRideRecordDao = mock(UrbanTransportRideRecordDao.class);
         Pricelist pricelist = mock(Pricelist.class);
 
-        when(request.getParameter(TICKET_TYPE_KEY)).thenReturn(TICKET_TYPE_VALUE);
+        when(request.getParameter(TICKET_TYPE_KEY)).thenReturn(TICKET_TYPE_VALUE.name());
         when(request.getParameter(RIDE_DATE_KEY)).thenReturn(RIDE_DATE_VALUE);
         when(request.getParameter(USER_ID_KEY)).thenReturn(USER_ID_VALUE);
 
         when(pricelist.getPrice(TICKET_TYPE_VALUE)).thenReturn(TICKET_PRICE);
 
         LocalDateTime rideDate = LocalDateTime.parse(RIDE_DATE_VALUE);
-        TicketType ticketType = TicketType.valueOf(TICKET_TYPE_VALUE);
 
-        UrbanTransportRideRecord rideRecord = new UrbanTransportRideRecord(0L, rideDate, TICKET_PRICE, ticketType, USER_ID);
+        UrbanTransportRideRecord rideRecord =
+                new UrbanTransportRideRecord(0L, rideDate, TICKET_PRICE, TICKET_TYPE_VALUE, USER_ID);
 
         TicketController ticketController = new TicketController(urbanTransportRideRecordDao, pricelist);
         String actualViewName = ticketController.processTicket(request);
