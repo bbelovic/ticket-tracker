@@ -13,6 +13,7 @@ public class TicketTrackerInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.getEnvironment().setActiveProfiles("production");
         context.register(WebConfiguration.class);
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
         dispatcher.setLoadOnStartup(1);

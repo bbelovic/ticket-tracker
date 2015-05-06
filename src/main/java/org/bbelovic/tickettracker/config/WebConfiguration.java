@@ -9,9 +9,8 @@ import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
-@Import(AppConfiguration.class)
 @EnableWebMvc
-@ComponentScan("org.bbelovic.tickettracker.web.*")
+@ComponentScan("org.bbelovic.tickettracker.*")
 public class WebConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
