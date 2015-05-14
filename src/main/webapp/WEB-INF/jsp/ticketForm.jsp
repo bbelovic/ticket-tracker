@@ -1,8 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html><head>
+<link rel="stylesheet" type="text/css" href="<c:url value="/resources/style.css"/>" />
 <title>Add new ticket information</title>
 <head>
 <body>
+<div class="top">
+Add new ride record
+</div>
 <form method="post" action="<c:url value="/ticketController"/>">
 User ID:
 <input type="text" name="userId"/>
@@ -22,5 +26,5 @@ Date:
 <br>
 <input type="submit"/>
 </form>
-<body>
+</body>
 </html>

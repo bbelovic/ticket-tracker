@@ -1,0 +1,24 @@
+div.top {
+    background-color:red;
+    top:5px;
+    width:865px;
+    left:25px
+}
+
+div.left {
+    float:left;
+    position:relative;
+    background-color:green;
+    width:100px;
+    top:20px;
+    left:25px;
+}
+
+div.center {
+    float:left;
+    position:relative;
+    background-color:gray;
+    width:700px;
+    top:20px;
+    left:40px;
+}
