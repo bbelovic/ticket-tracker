@@ -16,7 +16,6 @@ create table users (
     zone_id varchar(30)
 );
 
-
 drop table if exists pricelist;
 create table pricelist (
     id bigserial,
