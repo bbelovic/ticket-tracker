@@ -7,10 +7,13 @@
 <div class="top">
 Add new ride record
 </div>
+<div class="left">
+Menu
+</div>
+<div class="center">
 <form method="post" action="<c:url value="/ticketController"/>">
 User ID:
 <input type="text" name="userId"/>
-<br>
 Ticket type:
 <select name="ticketType">
 <option value="SMS_75">SMS 75</option>
@@ -20,11 +23,10 @@ Ticket type:
 <option value="WITHOUT_TICKET">WITHOUT TICKET</option>
 <option>UNIVERSAL</option>
 </select>
-<br>
 Date:
 <input type="datetime-local" name="rideDate" >
-<br>
 <input type="submit"/>
 </form>
+</div>
 </body>
 </html>
