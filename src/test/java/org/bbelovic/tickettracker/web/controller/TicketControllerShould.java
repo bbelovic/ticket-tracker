@@ -9,6 +9,8 @@ import org.junit.Test;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.bbelovic.tickettracker.domain.TicketType.SMS_75;
 import static org.junit.Assert.assertEquals;
@@ -23,7 +25,7 @@ public class TicketControllerShould {
     private static final String RIDE_DATE_KEY = "rideDate";
     private static final String USER_ID_KEY = "userId";
     private static final long USER_ID = 1L;
-    private static final String EXPECTED_VIEW_NAME = "ticketResult";
+    private static final String EXPECTED_VIEW_NAME = "main";
     private static final BigDecimal TICKET_PRICE = BigDecimal.valueOf(29L);
 
     @Test
@@ -44,16 +46,34 @@ public class TicketControllerShould {
         UrbanTransportRideRecord rideRecord =
                 new UrbanTransportRideRecord(0L, rideDate, TICKET_PRICE, TICKET_TYPE_VALUE, USER_ID);
 
+        Map<String, Object> modelMap = new HashMap<>();
         TicketController ticketController = new TicketController(urbanTransportRideRecordDao, pricelist);
-        String actualViewName = ticketController.processTicket(request);
+        String actualViewName = ticketController.processTicket(request, modelMap);
+        Map<String, Object> expectedModelMap = new HashMap<>();
+        expectedModelMap.put("jspToInclude", "ticketResult");
 
         assertEquals(EXPECTED_VIEW_NAME, actualViewName);
+        assertEquals(expectedModelMap, modelMap);
 
         verify(request).getParameter(TICKET_TYPE_KEY);
         verify(request).getParameter(RIDE_DATE_KEY);
         verify(request).getParameter(USER_ID_KEY);
         verify(urbanTransportRideRecordDao).insert(rideRecord);
         verify(pricelist).getPrice(TICKET_TYPE_VALUE);
+    }
 
+    @Test
+    public void
+    handle_request_for_new_ride_record_form() {
+        UrbanTransportRideRecordDao urbanTransportRideRecordDao = mock(UrbanTransportRideRecordDao.class);
+        Pricelist pricelist = mock(Pricelist.class);
+        TicketController ticketController = new TicketController(urbanTransportRideRecordDao, pricelist);
+        Map<String, Object> modelMap = new HashMap<>();
+        String viewName = ticketController.newRideRecordForm(modelMap);
+        assertEquals("main", viewName);
+        Map<String, Object> expectedModelMap = new HashMap<>();
+        expectedModelMap.put("jspToInclude", "ticketForm");
+        assertEquals(expectedModelMap, modelMap);
+        verifyZeroInteractions(urbanTransportRideRecordDao, pricelist);
     }
 }

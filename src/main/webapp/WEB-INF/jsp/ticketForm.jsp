@@ -1,16 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<html><head>
-<link rel="stylesheet" type="text/css" href="<c:url value="/resources/style.css"/>" />
-<title>Add new ticket information</title>
-<head>
-<body>
-<div class="top">
-Add new ride record
-</div>
-<div class="left">
-Menu
-</div>
-<div class="center">
 <form method="post" action="<c:url value="/ticketController"/>">
 User ID:
 <input type="text" name="userId"/>
@@ -27,6 +15,3 @@ Date:
 <input type="datetime-local" name="rideDate" >
 <input type="submit"/>
 </form>
-</div>
-</body>
-</html>
