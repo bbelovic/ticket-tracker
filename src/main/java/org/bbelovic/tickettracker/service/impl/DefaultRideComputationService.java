@@ -12,11 +12,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
-import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.*;
+import static org.bbelovic.tickettracker.domain.TicketType.UNIVERSAL;
 
 public class DefaultRideComputationService implements RideComputationService {
     private final UrbanTransportRideRecordDao urbanTransportRideRecordDao;
@@ -50,7 +51,15 @@ public class DefaultRideComputationService implements RideComputationService {
 
         Map<YearMonth, Set<TicketStatisticsItem>> result = new TreeMap<>(YearMonth::compareTo);
         rawTicketStatsByMonth.forEach((yearMonth, ticketCount) -> result.put(yearMonth, toTicketStatistics.apply(ticketCount)));
-
+        BiConsumer<YearMonth, Set<TicketStatisticsItem>> biConsumer = (key, value) -> {
+            EnumSet<TicketType> ticketTypes = EnumSet.complementOf(EnumSet.of(UNIVERSAL));
+            ticketTypes.removeAll(value.stream().map(TicketStatisticsItem::getTicketType).collect(toList()));
+            ticketTypes.forEach(ticketType -> {
+                TicketStatisticsItem empty = new TicketStatisticsItem(ticketType, 0L, pricelist.getPrice(ticketType));
+                value.add(empty);
+            });
+        };
+        result.forEach(biConsumer);
         return new TicketStatistics(result);
     }
 

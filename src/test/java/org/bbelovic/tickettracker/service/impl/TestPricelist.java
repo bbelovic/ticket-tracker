@@ -13,7 +13,8 @@ class TestPricelist implements Pricelist {
         Map<TicketType, BigDecimal> pricelist = new HashMap<>();
         pricelist.put(TicketType.SMS_20, BigDecimal.valueOf(20L));
         pricelist.put(TicketType.SMS_75, BigDecimal.valueOf(29L));
-        pricelist.put(TicketType.SINGLE_60, BigDecimal.valueOf(20L));
+        pricelist.put(TicketType.SINGLE_15, BigDecimal.valueOf(20L));
+        pricelist.put(TicketType.SINGLE_60, BigDecimal.valueOf(25L));
         pricelist.put(TicketType.WITHOUT_TICKET, BigDecimal.ZERO);
         return pricelist.get(ticketType);
     }
