@@ -55,7 +55,7 @@ public class DefaultRideComputationService implements RideComputationService {
             EnumSet<TicketType> ticketTypes = EnumSet.complementOf(EnumSet.of(UNIVERSAL));
             ticketTypes.removeAll(value.stream().map(TicketStatisticsItem::getTicketType).collect(toList()));
             ticketTypes.forEach(ticketType -> {
-                TicketStatisticsItem empty = new TicketStatisticsItem(ticketType, 0L, pricelist.getPrice(ticketType));
+                TicketStatisticsItem empty = new TicketStatisticsItem(ticketType, 0L, BigDecimal.ZERO);
                 value.add(empty);
             });
         };

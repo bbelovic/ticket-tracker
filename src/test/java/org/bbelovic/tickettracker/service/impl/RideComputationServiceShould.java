@@ -16,10 +16,12 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.*;
 
+import static java.lang.String.format;
 import static java.math.BigDecimal.ZERO;
 import static java.util.Arrays.asList;
 import static org.bbelovic.tickettracker.domain.TicketType.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
 public class RideComputationServiceShould {
@@ -54,16 +56,37 @@ public class RideComputationServiceShould {
         Map<YearMonth, Set<TicketStatisticsItem>> actualItems =
                 actualStatistics.getTicketStatistics();
         assertEquals(expectedItems, actualItems);
+        System.out.println(expectedItems);
+        System.out.println(actualItems);
 
+        Iterator<Map.Entry<YearMonth, Set<TicketStatisticsItem>>> expectedIterator = expectedItems.entrySet().iterator();
+        Iterator<Map.Entry<YearMonth, Set<TicketStatisticsItem>>> actualIterator = actualItems.entrySet().iterator();
+        while (expectedIterator.hasNext() && actualIterator.hasNext()) {
+            Map.Entry<YearMonth, Set<TicketStatisticsItem>> expectedEntry = expectedIterator.next();
+            Map.Entry<YearMonth, Set<TicketStatisticsItem>> actualEntry = actualIterator.next();
+            assertEquals(expectedEntry.getKey(), actualEntry.getKey());
+            List<TicketStatisticsItem> expected = new ArrayList<>(expectedEntry.getValue());
+            List<TicketStatisticsItem> actual = new ArrayList<>(actualEntry.getValue());
+            expected.sort(Comparator.comparing(TicketStatisticsItem::getTicketType));
+            actual.sort(Comparator.comparing(TicketStatisticsItem::getTicketType));
+            String errorMsg = format("Maps differ for expectedKey='%s' actualKey='%s'", expectedEntry.getKey(), actualEntry.getKey());
+
+            assertEquals(errorMsg, expected, actual);
+        }
+        assertFalse(expectedIterator.hasNext());
+        assertFalse(actualIterator.hasNext());
     }
+
+
+
 
     private Map<YearMonth, Set<TicketStatisticsItem>> expectedStatisticsItems() {
         Map<YearMonth, Set<TicketStatisticsItem>> expectedItems = new TreeMap<>(YearMonth::compareTo);
 
-        TicketStatisticsItem item1 = new TicketStatisticsItem(SMS_20, 2, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item1_sms75 = new TicketStatisticsItem(SMS_75, 0, BigDecimal.valueOf(29L));
-        TicketStatisticsItem item1_single15 = new TicketStatisticsItem(SINGLE_15, 0, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item1_single60 = new TicketStatisticsItem(SINGLE_60, 0, BigDecimal.valueOf(25L));
+        TicketStatisticsItem item1 = new TicketStatisticsItem(SMS_20, 2, BigDecimal.valueOf(40L));
+        TicketStatisticsItem item1_sms75 = new TicketStatisticsItem(SMS_75, 0, ZERO);
+        TicketStatisticsItem item1_single15 = new TicketStatisticsItem(SINGLE_15, 0, ZERO);
+        TicketStatisticsItem item1_single60 = new TicketStatisticsItem(SINGLE_60, 0, ZERO);
         TicketStatisticsItem item1_withoutTicket = new TicketStatisticsItem(WITHOUT_TICKET, 1, ZERO);
         Comparator<TicketStatisticsItem> comparator = Comparator.comparing(TicketStatisticsItem::getTicketType);
         Set<TicketStatisticsItem> set1 = new TreeSet<>(comparator);
@@ -71,17 +94,17 @@ public class RideComputationServiceShould {
         expectedItems.put(YearMonth.of(2015, 3), set1);
 
         TicketStatisticsItem item2_sms75 = new TicketStatisticsItem(SMS_75, 1, BigDecimal.valueOf(29L));
-        TicketStatisticsItem item2_sms20 = new TicketStatisticsItem(SMS_20, 0, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item2_single15 = new TicketStatisticsItem(SINGLE_15, 0, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item2_single60 = new TicketStatisticsItem(SINGLE_60, 0, BigDecimal.valueOf(25L));
+        TicketStatisticsItem item2_sms20 = new TicketStatisticsItem(SMS_20, 0, ZERO);
+        TicketStatisticsItem item2_single15 = new TicketStatisticsItem(SINGLE_15, 0, ZERO);
+        TicketStatisticsItem item2_single60 = new TicketStatisticsItem(SINGLE_60, 0, ZERO);
         TicketStatisticsItem item2_withoutTicket = new TicketStatisticsItem(WITHOUT_TICKET, 0, ZERO);
         Set<TicketStatisticsItem> set2 = new TreeSet<>(comparator);
         set2.addAll(asList(item2_sms20, item2_sms75, item2_single15, item2_single60, item2_withoutTicket));
         expectedItems.put(YearMonth.of(2015, 4), set2);
 
-        TicketStatisticsItem item3_single15 = new TicketStatisticsItem(SINGLE_15, 0, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item3_sms75 = new TicketStatisticsItem(SMS_75, 0, BigDecimal.valueOf(29L));
-        TicketStatisticsItem item3_sms20 = new TicketStatisticsItem(SMS_20, 0, BigDecimal.valueOf(20L));
+        TicketStatisticsItem item3_single15 = new TicketStatisticsItem(SINGLE_15, 0, ZERO);
+        TicketStatisticsItem item3_sms75 = new TicketStatisticsItem(SMS_75, 0, ZERO);
+        TicketStatisticsItem item3_sms20 = new TicketStatisticsItem(SMS_20, 0, ZERO);
         TicketStatisticsItem item3_single60 = new TicketStatisticsItem(SINGLE_60, 1, BigDecimal.valueOf(25L));
         TicketStatisticsItem item3_withoutTicket = new TicketStatisticsItem(WITHOUT_TICKET, 1, ZERO);
         Set<TicketStatisticsItem> set3 = new TreeSet<>(comparator);
@@ -89,18 +112,18 @@ public class RideComputationServiceShould {
         expectedItems.put(YearMonth.of(2015, 5), set3);
 
         TicketStatisticsItem item4_sms20 = new TicketStatisticsItem(SMS_20, 1, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item4_sms75 = new TicketStatisticsItem(SMS_75, 0, BigDecimal.valueOf(29L));
-        TicketStatisticsItem item4_single15 = new TicketStatisticsItem(SINGLE_15, 0, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item4_single60 = new TicketStatisticsItem(SINGLE_60, 0, BigDecimal.valueOf(25L));
+        TicketStatisticsItem item4_sms75 = new TicketStatisticsItem(SMS_75, 0, ZERO);
+        TicketStatisticsItem item4_single15 = new TicketStatisticsItem(SINGLE_15, 0, ZERO);
+        TicketStatisticsItem item4_single60 = new TicketStatisticsItem(SINGLE_60, 0, ZERO);
         TicketStatisticsItem item4_withoutTicket = new TicketStatisticsItem(WITHOUT_TICKET, 0, ZERO);
         Set<TicketStatisticsItem> set4 = new TreeSet<>(comparator);
         set4.addAll(asList(item4_single15, item4_single60, item4_sms20, item4_sms75, item4_withoutTicket));
         expectedItems.put(YearMonth.of(2015, 2), set4);
 
         TicketStatisticsItem item5_sms20 = new TicketStatisticsItem(SMS_20, 1, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item5_sms75 = new TicketStatisticsItem(SMS_75, 0, BigDecimal.valueOf(29L));
-        TicketStatisticsItem item5_single15 = new TicketStatisticsItem(SINGLE_15, 0, BigDecimal.valueOf(20L));
-        TicketStatisticsItem item5_single60 = new TicketStatisticsItem(SINGLE_60, 0, BigDecimal.valueOf(25L));
+        TicketStatisticsItem item5_sms75 = new TicketStatisticsItem(SMS_75, 0, ZERO);
+        TicketStatisticsItem item5_single15 = new TicketStatisticsItem(SINGLE_15, 0, ZERO);
+        TicketStatisticsItem item5_single60 = new TicketStatisticsItem(SINGLE_60, 0, ZERO);
         TicketStatisticsItem item5_withoutTicket = new TicketStatisticsItem(WITHOUT_TICKET, 0, ZERO);
         Set<TicketStatisticsItem> set5 = new TreeSet<>(comparator);
         set5.addAll(asList(item5_sms20, item5_single15, item5_single60, item5_sms75, item5_withoutTicket));
