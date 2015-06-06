@@ -36,8 +36,15 @@ public class TicketStatisticsControllerShould {
         Map<String, Object> expectedModelMap = new HashMap<>();
 
         Map<YearMonth, EnumMap<TicketType, List<TicketStatisticsItem>>> ticketStats = new HashMap<>();
-        ticketStatistics.getTicketStatistics().forEach((key, value)-> ticketStats.put(key, toEnumMap(value)));
+        ticketStatistics.getTicketStatistics().forEach((key, value) -> ticketStats.put(key, toEnumMap(value)));
 
+        Map<YearMonth, Long> monthlyTotals = new HashMap<>();
+        monthlyTotals.put(YearMonth.of(2015, MAY), 29L);
+
+        long grandTotal = monthlyTotals.values().stream().mapToLong(Long::longValue).sum();
+
+        expectedModelMap.put("monthlyTotals", monthlyTotals);
+        expectedModelMap.put("grandTotal", grandTotal);
         expectedModelMap.put("ticketStatistics", ticketStats);
 
         expectedModelMap.put("ticketTypes", EnumSet.complementOf(EnumSet.of(UNIVERSAL)));

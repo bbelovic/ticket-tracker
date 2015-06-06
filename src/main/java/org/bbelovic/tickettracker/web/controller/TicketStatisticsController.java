@@ -30,7 +30,25 @@ public class TicketStatisticsController {
     public String prepareStatisticsData(Map<String, Object> modelMap) {
         TicketStatistics ticketStatistics = rideComputationService.computeTicketStatistics();
         modelMap.put("ticketTypes", EnumSet.complementOf(EnumSet.of(UNIVERSAL)));
-        modelMap.put("ticketStatistics", processStatisticsItems(ticketStatistics));
+        Map<YearMonth, EnumMap<TicketType, List<TicketStatisticsItem>>> statisticsItems = processStatisticsItems(ticketStatistics);
+
+        Map<YearMonth, Long> monthlyTotals = new HashMap<>();
+        statisticsItems.forEach((key, value) -> {
+            long monthlySum = value.values()
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .filter(ticketStatisticsItem -> ticketStatisticsItem.getTicketCount() > 0)
+                    .mapToLong(item -> item.getTicketPrice().longValue())
+                    .sum();
+            monthlyTotals.put(key, monthlySum);
+
+        });
+
+        long grandTotal = monthlyTotals.values().stream().mapToLong(Long::longValue).sum();
+
+        modelMap.put("monthlyTotals", monthlyTotals);
+        modelMap.put("grandTotal", grandTotal);
+        modelMap.put("ticketStatistics", statisticsItems);
         modelMap.put("jspToInclude", "ticketStatistics");
         return "main";
     }
