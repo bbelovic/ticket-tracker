@@ -13,10 +13,10 @@
 
 <c:forEach var="ticketStatisticsItem" items="${entry.value}">
 <td align="center">
-${ticketStatisticsItem.value[0].ticketCount} / ${ticketStatisticsItem.value[0].ticketPrice}
+${ticketStatisticsItem.value[0].ticketCount}
 </td>
 </c:forEach>
-<td>${monthlyTotals[entry.key]}</td>
+<td align="center">${monthlyTotals[entry.key]}</td>
 </tr>
 
 </c:forEach>
@@ -24,7 +24,7 @@ ${ticketStatisticsItem.value[0].ticketCount} / ${ticketStatisticsItem.value[0].t
 <tr>
 <c:forEach var="i" begin="0" end="6" step="1">
 <c:choose>
-    <c:when test="${i == 6}"><td>${grandTotal}</td></c:when>
+    <c:when test="${i == 6}"><td align="center">${grandTotal}</td></c:when>
     <c:otherwise><td>&nbsp;</td></c:otherwise>
 </c:choose>
 </c:forEach>
