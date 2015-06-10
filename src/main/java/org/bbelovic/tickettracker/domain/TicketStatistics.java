@@ -1,21 +1,19 @@
 package org.bbelovic.tickettracker.domain;
 
-import java.time.YearMonth;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 
 public class TicketStatistics {
-    private Map<YearMonth, Set<TicketStatisticsItem>> map;
+    private final List<DummyTicketStatisticsItem> items;
+    private final long totalSum;
 
-    public TicketStatistics(Map<YearMonth, Set<TicketStatisticsItem>> map) {
-        this.map = map;
-    }
 
-    public Map<YearMonth, Set<TicketStatisticsItem>> getTicketStatistics() {
-        return map;
+    public TicketStatistics(List<DummyTicketStatisticsItem> items) {
+        this.items = requireNonNull(items, "'items' can't be null");
+        this.totalSum = items.stream().mapToLong(item->item.getTotalPeriodSum().longValue()).sum();
     }
 
     @Override
@@ -23,17 +21,24 @@ public class TicketStatistics {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TicketStatistics that = (TicketStatistics) o;
-        return Objects.equals(map, that.map);
+        return Objects.equals(items, that.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(map);
+        return Objects.hash(items);
     }
 
     @Override
     public String toString() {
-        return format("TicketStatistics[data=%s]", map);
+        return format("TicketStatistics[items=%s]", items);
     }
 
+    public List<DummyTicketStatisticsItem> getItems() {
+        return items;
+    }
+
+    public long getTotalSum() {
+        return totalSum;
+    }
 }

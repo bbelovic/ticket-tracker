@@ -8,24 +8,25 @@
 <td>Totals</td>
 </tr>
 
-<c:forEach var="entry" items="${ticketStatistics}">
-<tr><td>${entry.key}</td>
-
-<c:forEach var="ticketStatisticsItem" items="${entry.value}">
-<td align="center">
-${ticketStatisticsItem.value[0].ticketCount}
-</td>
-</c:forEach>
-<td align="center">${monthlyTotals[entry.key]}</td>
-</tr>
-
+<c:forEach var="item" items="${ticketStatistics.items}">
+<tr>
+<td>${item.period}</td>
+<td>${item.single15}</td>
+<td>${item.single60}</td>
+<td>${item.sms20}</td>
+<td>${item.sms75}</td>
+<td>${item.withoutTicket}</td>
+<td>${item.totalPeriodSum}</td>
+<tr>
 </c:forEach>
 
 <tr>
 <c:forEach var="i" begin="0" end="6" step="1">
 <c:choose>
-    <c:when test="${i == 6}"><td align="center">${grandTotal}</td></c:when>
+    <c:when test="${i == 6}"><td align="center">${ticketStatistics.totalSum}</td></c:when>
     <c:otherwise><td>&nbsp;</td></c:otherwise>
 </c:choose>
 </c:forEach>
 </tr>
+
+</table>

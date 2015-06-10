@@ -1,32 +1,30 @@
 package org.bbelovic.tickettracker.web.controller;
 
+import org.bbelovic.tickettracker.domain.DummyTicketStatisticsItem;
 import org.bbelovic.tickettracker.domain.TicketStatistics;
-import org.bbelovic.tickettracker.domain.TicketStatisticsItem;
-import org.bbelovic.tickettracker.domain.TicketType;
 import org.bbelovic.tickettracker.service.RideComputationService;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-import static java.math.BigDecimal.ZERO;
-import static java.time.Month.MAY;
 import static java.util.Arrays.asList;
-import static org.bbelovic.tickettracker.domain.TicketType.*;
+import static org.bbelovic.tickettracker.domain.TicketType.UNIVERSAL;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TicketStatisticsControllerShould {
+
     @Test
     public void
-    prepare_ticket_statistics_data_for_view() {
+    prepare_ticket_statistics_data_and_view_information() {
         RideComputationService rideComputationService = mock(RideComputationService.class);
 
-        Set<TicketStatisticsItem> statisticsItems = prepareTicketStatisticsItems();
-        TicketStatistics ticketStatistics = getTicketStatistics(statisticsItems);
+        TicketStatistics ticketStatistics = getTicketStatistics();
 
         when(rideComputationService.computeTicketStatistics()).thenReturn(ticketStatistics);
 
@@ -35,50 +33,20 @@ public class TicketStatisticsControllerShould {
         String actualViewName = controller.prepareStatisticsData(modelMap);
         Map<String, Object> expectedModelMap = new HashMap<>();
 
-        Map<YearMonth, EnumMap<TicketType, List<TicketStatisticsItem>>> ticketStats = new HashMap<>();
-        ticketStatistics.getTicketStatistics().forEach((key, value) -> ticketStats.put(key, toEnumMap(value)));
 
-        Map<YearMonth, Long> monthlyTotals = new HashMap<>();
-        monthlyTotals.put(YearMonth.of(2015, MAY), 29L);
-
-        long grandTotal = monthlyTotals.values().stream().mapToLong(Long::longValue).sum();
-
-        expectedModelMap.put("monthlyTotals", monthlyTotals);
-        expectedModelMap.put("grandTotal", grandTotal);
-        expectedModelMap.put("ticketStatistics", ticketStats);
-
+        expectedModelMap.put("ticketStatistics", ticketStatistics);
         expectedModelMap.put("ticketTypes", EnumSet.complementOf(EnumSet.of(UNIVERSAL)));
-
         expectedModelMap.put("jspToInclude", "ticketStatistics");
 
         assertEquals("main", actualViewName);
         assertEquals(expectedModelMap, modelMap);
+        assertEquals(expectedModelMap.get("ticketStatistics"), modelMap.get("ticketStatistics"));
 
     }
 
-    private Set<TicketStatisticsItem> prepareTicketStatisticsItems() {
-        TicketStatisticsItem single15 = new TicketStatisticsItem(SINGLE_15, 0L, BigDecimal.valueOf(20L));
-        TicketStatisticsItem single60 = new TicketStatisticsItem(SINGLE_60, 0L, BigDecimal.valueOf(25L));
-        TicketStatisticsItem sms20 = new TicketStatisticsItem(SMS_20, 0L, BigDecimal.valueOf(20L));
-        TicketStatisticsItem sms75 = new TicketStatisticsItem(SMS_75, 1L, BigDecimal.valueOf(29L));
-        TicketStatisticsItem withoutTicket = new TicketStatisticsItem(WITHOUT_TICKET, 0L, ZERO);
-        Set<TicketStatisticsItem> statisticsItems = new TreeSet<>(Comparator.comparing(TicketStatisticsItem::getTicketType));
-        statisticsItems.addAll(asList(single15, single60, sms20, sms75, withoutTicket));
-        return statisticsItems;
-    }
-
-    private EnumMap<TicketType, List<TicketStatisticsItem>> toEnumMap(Set<TicketStatisticsItem> statisticsItems) {
-        EnumMap<TicketType, List<TicketStatisticsItem>> enumMap = new EnumMap<>(TicketType.class);
-        Map<TicketType, List<TicketStatisticsItem>> collect = statisticsItems.stream()
-                .collect(Collectors.groupingBy(TicketStatisticsItem::getTicketType));
-        enumMap.putAll(collect);
-        return enumMap;
-    }
-
-    private TicketStatistics getTicketStatistics(Set<TicketStatisticsItem> ticketStatisticsItems) {
-        Map<YearMonth, Set<TicketStatisticsItem>> statisticsItemMap = new HashMap<>();
-        statisticsItemMap.put(YearMonth.of(2015, MAY), ticketStatisticsItems);
-        return new TicketStatistics(statisticsItemMap);
+    private TicketStatistics getTicketStatistics() {
+        DummyTicketStatisticsItem item = new DummyTicketStatisticsItem(YearMonth.of(2015, 5), 1, 0, 0, 0, 0, BigDecimal.valueOf(20L));
+        return new TicketStatistics(asList(item));
     }
 
 }

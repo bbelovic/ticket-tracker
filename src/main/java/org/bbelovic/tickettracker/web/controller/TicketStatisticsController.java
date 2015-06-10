@@ -1,16 +1,13 @@
 package org.bbelovic.tickettracker.web.controller;
 
 import org.bbelovic.tickettracker.domain.TicketStatistics;
-import org.bbelovic.tickettracker.domain.TicketStatisticsItem;
-import org.bbelovic.tickettracker.domain.TicketType;
 import org.bbelovic.tickettracker.service.RideComputationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.YearMonth;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.EnumSet;
+import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 import static org.bbelovic.tickettracker.domain.TicketType.UNIVERSAL;
@@ -30,40 +27,9 @@ public class TicketStatisticsController {
     public String prepareStatisticsData(Map<String, Object> modelMap) {
         TicketStatistics ticketStatistics = rideComputationService.computeTicketStatistics();
         modelMap.put("ticketTypes", EnumSet.complementOf(EnumSet.of(UNIVERSAL)));
-        Map<YearMonth, EnumMap<TicketType, List<TicketStatisticsItem>>> statisticsItems = processStatisticsItems(ticketStatistics);
-
-        Map<YearMonth, Long> monthlyTotals = new HashMap<>();
-        statisticsItems.forEach((key, value) -> {
-            long monthlySum = value.values()
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .filter(ticketStatisticsItem -> ticketStatisticsItem.getTicketCount() > 0)
-                    .mapToLong(item -> item.getTicketPrice().longValue())
-                    .sum();
-            monthlyTotals.put(key, monthlySum);
-
-        });
-
-        long grandTotal = monthlyTotals.values().stream().mapToLong(Long::longValue).sum();
-
-        modelMap.put("monthlyTotals", monthlyTotals);
-        modelMap.put("grandTotal", grandTotal);
-        modelMap.put("ticketStatistics", statisticsItems);
+        modelMap.put("ticketStatistics", ticketStatistics);
         modelMap.put("jspToInclude", "ticketStatistics");
         return "main";
-    }
-
-    private Map<YearMonth, EnumMap<TicketType,List<TicketStatisticsItem>>> processStatisticsItems(TicketStatistics ticketStatistics) {
-        Map<YearMonth, EnumMap<TicketType, List<TicketStatisticsItem>>> result = new HashMap<>();
-        ticketStatistics.getTicketStatistics()
-                .forEach((key, value) -> {
-                    Map<TicketType, List<TicketStatisticsItem>> collected = value.stream()
-                            .collect(Collectors.groupingBy(TicketStatisticsItem::getTicketType));
-                    EnumMap<TicketType, List<TicketStatisticsItem>> enumMap = new EnumMap<>(TicketType.class);
-                    enumMap.putAll(collected);
-                    result.put(key, enumMap);
-                });
-        return result;
     }
 
 }

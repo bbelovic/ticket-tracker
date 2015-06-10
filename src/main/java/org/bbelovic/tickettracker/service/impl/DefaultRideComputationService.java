@@ -2,28 +2,25 @@ package org.bbelovic.tickettracker.service.impl;
 
 import org.bbelovic.tickettracker.dao.UrbanTransportRideRecordDao;
 import org.bbelovic.tickettracker.domain.TicketStatistics;
-import org.bbelovic.tickettracker.domain.TicketStatisticsItem;
 import org.bbelovic.tickettracker.domain.TicketType;
 import org.bbelovic.tickettracker.domain.UrbanTransportRideRecord;
 import org.bbelovic.tickettracker.service.Pricelist;
 import org.bbelovic.tickettracker.service.RideComputationService;
+import org.bbelovic.tickettracker.domain.DummyTicketStatisticsItem;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Collector;
 
-import static java.util.stream.Collectors.*;
-import static org.bbelovic.tickettracker.domain.TicketType.UNIVERSAL;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static org.bbelovic.tickettracker.domain.TicketType.*;
 
 public class DefaultRideComputationService implements RideComputationService {
     private final UrbanTransportRideRecordDao urbanTransportRideRecordDao;
     private final Pricelist pricelist;
-
-    private final Function<Map<TicketType, Long>, Set<TicketStatisticsItem>> toTicketStatistics = mapToTicketStatistics();
 
     public DefaultRideComputationService(UrbanTransportRideRecordDao urbanTransportRideRecordDao, Pricelist pricelist) {
         this.urbanTransportRideRecordDao = urbanTransportRideRecordDao;
@@ -45,36 +42,27 @@ public class DefaultRideComputationService implements RideComputationService {
         Collector<UrbanTransportRideRecord, ?, Map<TicketType, Long>> ticketCountByTicketType =
                 groupingBy(UrbanTransportRideRecord::getTicketType, counting());
 
-        Map<YearMonth, Map<TicketType, Long>> rawTicketStatsByMonth = rideRecords
+        List<DummyTicketStatisticsItem> items = new ArrayList<>();
+                rideRecords
                 .stream()
-                .collect(groupingBy(this::getYearMonthFromRideRecord, ticketCountByTicketType));
-
-        Map<YearMonth, Set<TicketStatisticsItem>> result = new TreeMap<>(YearMonth::compareTo);
-        rawTicketStatsByMonth.forEach((yearMonth, ticketCount) -> result.put(yearMonth, toTicketStatistics.apply(ticketCount)));
-        BiConsumer<YearMonth, Set<TicketStatisticsItem>> biConsumer = (key, value) -> {
-            EnumSet<TicketType> ticketTypes = EnumSet.complementOf(EnumSet.of(UNIVERSAL));
-            ticketTypes.removeAll(value.stream().map(TicketStatisticsItem::getTicketType).collect(toList()));
-            ticketTypes.forEach(ticketType -> {
-                TicketStatisticsItem empty = new TicketStatisticsItem(ticketType, 0L, BigDecimal.ZERO);
-                value.add(empty);
-            });
-        };
-        result.forEach(biConsumer);
-        return new TicketStatistics(result);
-    }
-
-    private Function<Map<TicketType, Long>, Set<TicketStatisticsItem>> mapToTicketStatistics() {
-        return m -> {
-            Set<TicketStatisticsItem> items = new HashSet<>();
-            m.forEach((type, count) -> items.add(createTicketStatisticsItem(type, count)));
-            return items;
-        };
-    }
-
-    private TicketStatisticsItem createTicketStatisticsItem(TicketType type, Long count) {
-        BigDecimal priceValue = pricelist.getPrice(type);
-        BigDecimal finalPrice = priceValue.multiply(BigDecimal.valueOf(count));
-        return new TicketStatisticsItem(type, count, finalPrice);
+                .collect(groupingBy(this::getYearMonthFromRideRecord, ticketCountByTicketType))
+                .forEach((key, value) -> {
+                    long single15 = value.getOrDefault(SINGLE_15, 0L);
+                    long single60 = value.getOrDefault(SINGLE_60, 0L);
+                    long sms20 = value.getOrDefault(SMS_20, 0L);
+                    long sms75 = value.getOrDefault(SMS_75, 0L);
+                    long withoutTicket = value.getOrDefault(WITHOUT_TICKET, 0L);
+                    BigDecimal price15 = BigDecimal.valueOf(single15).multiply(pricelist.getPrice(SINGLE_15));
+                    BigDecimal price60 = BigDecimal.valueOf(single60).multiply(pricelist.getPrice(SINGLE_60));
+                    BigDecimal price20 = BigDecimal.valueOf(sms20).multiply(pricelist.getPrice(SMS_20));
+                    BigDecimal price75 = BigDecimal.valueOf(sms75).multiply(pricelist.getPrice(SMS_75));
+                    BigDecimal totalSum = price15.add(price60).add(price20).add(price75);
+                    DummyTicketStatisticsItem item = new DummyTicketStatisticsItem(key, single15, single60,
+                            sms20, sms75, withoutTicket, totalSum);
+                    items.add(item);
+                });
+        items.sort(Comparator.comparing(DummyTicketStatisticsItem::getPeriod));
+        return new TicketStatistics(items);
     }
 
     private YearMonth getYearMonthFromRideRecord(UrbanTransportRideRecord rideRecord) {
