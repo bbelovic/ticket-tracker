@@ -7,11 +7,11 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 public class TicketStatistics {
-    private final List<DummyTicketStatisticsItem> items;
+    private final List<TicketStatisticsItem> items;
     private final long totalSum;
 
 
-    public TicketStatistics(List<DummyTicketStatisticsItem> items) {
+    public TicketStatistics(List<TicketStatisticsItem> items) {
         this.items = requireNonNull(items, "'items' can't be null");
         this.totalSum = items.stream().mapToLong(item->item.getTotalPeriodSum().longValue()).sum();
     }
@@ -34,7 +34,7 @@ public class TicketStatistics {
         return format("TicketStatistics[items=%s]", items);
     }
 
-    public List<DummyTicketStatisticsItem> getItems() {
+    public List<TicketStatisticsItem> getItems() {
         return items;
     }
 

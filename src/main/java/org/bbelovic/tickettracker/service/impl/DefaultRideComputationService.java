@@ -6,7 +6,7 @@ import org.bbelovic.tickettracker.domain.TicketType;
 import org.bbelovic.tickettracker.domain.UrbanTransportRideRecord;
 import org.bbelovic.tickettracker.service.Pricelist;
 import org.bbelovic.tickettracker.service.RideComputationService;
-import org.bbelovic.tickettracker.domain.DummyTicketStatisticsItem;
+import org.bbelovic.tickettracker.domain.TicketStatisticsItem;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,7 +42,7 @@ public class DefaultRideComputationService implements RideComputationService {
         Collector<UrbanTransportRideRecord, ?, Map<TicketType, Long>> ticketCountByTicketType =
                 groupingBy(UrbanTransportRideRecord::getTicketType, counting());
 
-        List<DummyTicketStatisticsItem> items = new ArrayList<>();
+        List<TicketStatisticsItem> items = new ArrayList<>();
                 rideRecords
                 .stream()
                 .collect(groupingBy(this::getYearMonthFromRideRecord, ticketCountByTicketType))
@@ -57,11 +57,11 @@ public class DefaultRideComputationService implements RideComputationService {
                     BigDecimal price20 = BigDecimal.valueOf(sms20).multiply(pricelist.getPrice(SMS_20));
                     BigDecimal price75 = BigDecimal.valueOf(sms75).multiply(pricelist.getPrice(SMS_75));
                     BigDecimal totalSum = price15.add(price60).add(price20).add(price75);
-                    DummyTicketStatisticsItem item = new DummyTicketStatisticsItem(key, single15, single60,
+                    TicketStatisticsItem item = new TicketStatisticsItem(key, single15, single60,
                             sms20, sms75, withoutTicket, totalSum);
                     items.add(item);
                 });
-        items.sort(Comparator.comparing(DummyTicketStatisticsItem::getPeriod));
+        items.sort(Comparator.comparing(TicketStatisticsItem::getPeriod));
         return new TicketStatistics(items);
     }
 

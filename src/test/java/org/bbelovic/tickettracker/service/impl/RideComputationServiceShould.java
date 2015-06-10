@@ -5,7 +5,7 @@ import org.bbelovic.tickettracker.domain.TicketStatistics;
 import org.bbelovic.tickettracker.domain.UrbanTransportRideRecord;
 import org.bbelovic.tickettracker.service.Pricelist;
 import org.bbelovic.tickettracker.service.RideComputationService;
-import org.bbelovic.tickettracker.domain.DummyTicketStatisticsItem;
+import org.bbelovic.tickettracker.domain.TicketStatisticsItem;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,20 +52,20 @@ public class RideComputationServiceShould {
     }
 
     private TicketStatistics expectedTicketStatistics() {
-        DummyTicketStatisticsItem march2015 =
-                new DummyTicketStatisticsItem(YearMonth.of(2015, Month.MARCH), 0L, 0L, 2L, 0L, 1L, BigDecimal.valueOf(40L));
+        TicketStatisticsItem march2015 =
+                new TicketStatisticsItem(YearMonth.of(2015, Month.MARCH), 0L, 0L, 2L, 0L, 1L, BigDecimal.valueOf(40L));
 
-        DummyTicketStatisticsItem april2015 =
-                new DummyTicketStatisticsItem(YearMonth.of(2015, 4), 0, 0, 0, 1, 0, BigDecimal.valueOf(29L));
+        TicketStatisticsItem april2015 =
+                new TicketStatisticsItem(YearMonth.of(2015, 4), 0, 0, 0, 1, 0, BigDecimal.valueOf(29L));
 
-        DummyTicketStatisticsItem may2015 =
-                new DummyTicketStatisticsItem(YearMonth.of(2015, 5), 0, 1, 0, 0, 1, BigDecimal.valueOf(25));
+        TicketStatisticsItem may2015 =
+                new TicketStatisticsItem(YearMonth.of(2015, 5), 0, 1, 0, 0, 1, BigDecimal.valueOf(25));
 
-        DummyTicketStatisticsItem february2015 =
-                new DummyTicketStatisticsItem(YearMonth.of(2015, 2), 0, 0, 1, 0, 0, BigDecimal.valueOf(20L));
+        TicketStatisticsItem february2015 =
+                new TicketStatisticsItem(YearMonth.of(2015, 2), 0, 0, 1, 0, 0, BigDecimal.valueOf(20L));
 
-        DummyTicketStatisticsItem january2015 =
-                new DummyTicketStatisticsItem(YearMonth.of(2015, 1), 0, 0, 1, 0, 0, BigDecimal.valueOf(20L));
+        TicketStatisticsItem january2015 =
+                new TicketStatisticsItem(YearMonth.of(2015, 1), 0, 0, 1, 0, 0, BigDecimal.valueOf(20L));
 
         return new TicketStatistics(Arrays.asList(january2015, february2015,
                 march2015, april2015, may2015));

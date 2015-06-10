@@ -43,8 +43,8 @@ public class TicketStatisticsTest {
     }
 
     private TicketStatistics createNewTicketStatistics() {
-        DummyTicketStatisticsItem item1 = new DummyTicketStatisticsItem(YearMonth.of(2015, 6), 0, 0, 0, 0, 0, ZERO);
-        DummyTicketStatisticsItem item2 = new DummyTicketStatisticsItem(YearMonth.of(2015, 5), 1, 1, 1, 1, 1, BigDecimal.valueOf(94L));
+        TicketStatisticsItem item1 = new TicketStatisticsItem(YearMonth.of(2015, 6), 0, 0, 0, 0, 0, ZERO);
+        TicketStatisticsItem item2 = new TicketStatisticsItem(YearMonth.of(2015, 5), 1, 1, 1, 1, 1, BigDecimal.valueOf(94L));
         return new TicketStatistics(Arrays.asList(item1, item2));
     }
 }

@@ -1,6 +1,6 @@
 package org.bbelovic.tickettracker.web.controller;
 
-import org.bbelovic.tickettracker.domain.DummyTicketStatisticsItem;
+import org.bbelovic.tickettracker.domain.TicketStatisticsItem;
 import org.bbelovic.tickettracker.domain.TicketStatistics;
 import org.bbelovic.tickettracker.service.RideComputationService;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class TicketStatisticsControllerShould {
     }
 
     private TicketStatistics getTicketStatistics() {
-        DummyTicketStatisticsItem item = new DummyTicketStatisticsItem(YearMonth.of(2015, 5), 1, 0, 0, 0, 0, BigDecimal.valueOf(20L));
+        TicketStatisticsItem item = new TicketStatisticsItem(YearMonth.of(2015, 5), 1, 0, 0, 0, 0, BigDecimal.valueOf(20L));
         return new TicketStatistics(asList(item));
     }
 
