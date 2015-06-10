@@ -2,10 +2,9 @@ package org.bbelovic.tickettracker.service.impl;
 
 import org.bbelovic.tickettracker.dao.UrbanTransportRideRecordDao;
 import org.bbelovic.tickettracker.domain.TicketStatistics;
-import org.bbelovic.tickettracker.domain.UrbanTransportRideRecord;
-import org.bbelovic.tickettracker.service.Pricelist;
-import org.bbelovic.tickettracker.service.RideComputationService;
 import org.bbelovic.tickettracker.domain.TicketStatisticsItem;
+import org.bbelovic.tickettracker.domain.UrbanTransportRideRecord;
+import org.bbelovic.tickettracker.service.RideComputationService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,14 +23,12 @@ public class RideComputationServiceShould {
 
     private RideComputationService rideComputationService;
     private UrbanTransportRideRecordDao rideRecordDao;
-    private Pricelist pricelist;
 
     @Before
     public void setUp() {
         rideRecordDao = mock(UrbanTransportRideRecordDao.class);
         when(rideRecordDao.findAll()).thenReturn(testData());
-        pricelist = new TestPricelist();
-        rideComputationService = new DefaultRideComputationService(rideRecordDao, pricelist);
+        rideComputationService = new DefaultRideComputationService(rideRecordDao, new TestPricelist());
     }
 
 
